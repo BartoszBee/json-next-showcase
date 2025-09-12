@@ -15,7 +15,8 @@ export const revalidate = 60;
 
 // dynamiczne metadane
 export async function generateMetadata({ params }: { params: { id: string } }) {
-  const idNum = Number(params.id);
+  const { id } = await params;
+  const idNum = Number(id);
   if (!Number.isFinite(idNum) || idNum <= 0) {
     return { title: "Post not found" };
   }
@@ -44,7 +45,8 @@ export default async function PostDetailPage({
 }: {
   params: { id: string };
 }) {
-  const idNum = Number(params.id);
+  const { id } = await params;
+  const idNum = Number(id);
   if (!Number.isFinite(idNum) || idNum <= 0) {
     notFound();
   }
