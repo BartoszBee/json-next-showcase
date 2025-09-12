@@ -9,7 +9,7 @@ export async function getJSON<T>(url: string, tag?: string): Promise<T> {
 
     if (!res.ok) {
         // W Server Components rzucamy błąd, trafi do nearest error boundary
-        throw new Error(`Tequest failed: ${res.status} ${res.statusText} for ${url}`)
+        throw new Error(`Request failed: ${res.status} ${res.statusText} for ${url}`)
     }
 
     return (await res.json()) as T;

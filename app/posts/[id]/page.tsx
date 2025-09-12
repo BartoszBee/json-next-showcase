@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getJSON } from "@/lib/fetcher";
 import type { Post } from "@/types/types";
-import { title } from "process";
 
 type Comment = {
   postId: number;
