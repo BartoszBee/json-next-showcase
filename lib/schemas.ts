@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// create
 export const PostCreateSchema = z.object({
   title: z
     .string()
@@ -12,4 +13,16 @@ export const PostCreateSchema = z.object({
   userId: z.coerce.number().int().positive().default(1),
 });
 
+// update
+
+export const PostUpdateSchema = PostCreateSchema.extend({
+  id: z.coerce.number().int().positive()
+});
+
+export const IdSchema = z.object({
+  id: z.coerce.number().int().positive()
+});
+
+
 export type PostCreateInput = z.infer<typeof PostCreateSchema>;
+export type PostUpdateInput = z.infer<typeof PostUpdateSchema>;
