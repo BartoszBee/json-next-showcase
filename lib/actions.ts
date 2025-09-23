@@ -3,7 +3,7 @@
 
 import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { PostCreateSchema } from "./schemas";
+import { IdSchema, PostCreateSchema, PostUpdateSchema } from "./schemas";
 
 function formDataToObject(fd: FormData): Record<string, string> {
   const out: Record<string, string> = {};
@@ -41,5 +41,51 @@ export async function createPost(formData: FormData) {
   // rewalidacja listy
   revalidateTag("posts");
   // przekierowanie na listę
+  redirect("/posts");
+}
+
+// aktualizacja posta
+export async function updatePost(formData: FormData) {
+  const raw = formDataToObject(formData);
+  const parsed = PostUpdateSchema.safeParse(raw);
+  if (!parsed.success) {
+    const issue =
+      parsed.error.issues[0]?.message ||
+      "Nieprawidłowe dane formularza";
+    throw new Error(issue);
+  }
+  const data = parsed.data;
+
+  const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${data.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+    body: JSON.stringify({
+      title: data.title,
+      body: data.body,
+      userId: data.userId,
+      id: data.id,
+    }),
+  });
+  if (!res.ok) throw new Error(`Nie udało się zaktualizować posta (status ${res.status})`);
+
+  revalidateTag("posts");
+  redirect("/posts");
+}
+
+// usunięcie posta
+export async function deletePost(formData: FormData) {
+  const raw = formDataToObject(formData);
+  const parsed = IdSchema.safeParse(raw);
+  if (!parsed.success) {
+    throw new Error("Brak lub nieprawidłowy identyfikator posta.");
+  }
+  const { id } = parsed.data;
+
+  const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error(`Nie udało się usunąć posta (status ${res.status})`);
+
+  revalidateTag("posts");
   redirect("/posts");
 }
